@@ -1,0 +1,40 @@
+# dequeue and enqueue
+class Queue:
+    def __init__(self):
+        self.items = []
+
+    def enqueue(self, item):
+        self.items.append(item)
+
+    def dequeue(self):
+        if not self.is_empty():
+            return self.items.pop(0)
+        else:
+            return "Queue is empty"
+
+    def is_empty(self):
+        return len(self.items) == 0
+
+    def peek(self):
+        if not self.is_empty():
+            return self.items[0]
+        else:
+            return "Queue is empty"
+
+# Example
+ticket_queue = Queue()
+
+# Enqueue customers
+ticket_queue.enqueue("Grace")
+ticket_queue.enqueue("Hannah")
+ticket_queue.enqueue("Craig")
+
+# Allocate tickets (Dequeue)
+allocated_ticket = ticket_queue.dequeue()
+print(f"{allocated_ticket} got a ticket.")
+
+# Check the next customer in line
+next_customer = ticket_queue.peek()
+print(f"Next customer in line: {next_customer}")
+
+# Evaluate efficiency: O(1) for enqueue and dequeue operations
