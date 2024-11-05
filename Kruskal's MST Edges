@@ -1,0 +1,82 @@
+from collections import defaultdict
+from heapq import heapify, heappop, heappush
+
+class Graph:
+    def __init__(self, vertices):
+        self.vertices = vertices
+        self.graph = defaultdict(list)
+
+    def add_edge(self, u, v, weight):
+        self.graph[u].append((v, weight))
+        self.graph[v].append((u, weight))
+
+    def kruskal_mst(self):
+        edges = []
+        for u in range(self.vertices):
+            for v, w in self.graph[u]:
+                edges.append((w, u, v))
+
+        edges.sort()  # Sort edges by weight
+        mst_edges = []
+        parent = [-1] * self.vertices
+
+        def find_set(x):
+            if parent[x] == -1:
+                return x
+            parent[x] = find_set(parent[x])
+            return parent[x]
+
+        def union_sets(x, y):
+            root_x = find_set(x)
+            root_y = find_set(y)
+            parent[root_x] = root_y
+
+        for edge in edges:
+            weight, u, v = edge
+            if find_set(u) != find_set(v):
+                mst_edges.append((u, v, weight))
+                union_sets(u, v)
+
+        return mst_edges
+
+    def prim_mst(self):
+        visited = [False] * self.vertices
+        min_heap = [(float('inf'), 0, 0)] * self.vertices  # Initialize with inf
+        heapify(min_heap)
+        mst_edges = []
+
+        while min_heap:
+            weight, u, v = heappop(min_heap)
+            if not visited[v]:
+                visited[v] = True
+                mst_edges.append((u, v, weight))
+                for neighbor, neighbor_weight in self.graph[v]:
+                    if not visited[neighbor] and neighbor_weight < min_heap[neighbor][0]:
+                        min_heap[neighbor] = (neighbor_weight, v, neighbor)
+                        heapify(min_heap)
+
+        return mst_edges
+
+# Define the graph
+g = Graph(9)
+edges = [
+    (0, 1, 4), (0, 7, 8), (1, 2, 8), (1, 7, 11),
+    (2, 3, 7), (2, 8, 2), (2, 5, 4), (3, 4, 9),
+    (3, 5, 14), (4, 5, 10), (5, 6, 2), (6, 7, 1),
+    (6, 8, 6), (7, 8, 7)
+]
+
+for edge in edges:
+    g.add_edge(*edge)
+
+# Find MST using Kruskal's algorithm
+kruskal_mst = g.kruskal_mst()
+print("Kruskal's MST Edges:")
+for edge in kruskal_mst:
+    print(f"Edge ({edge[0]}, {edge[1]}) with weight {edge[2]}")
+
+# Find MST using Prim's algorithm
+prim_mst = g.prim_mst()
+print("\nPrim's MST Edges:")
+for edge in prim_mst:
+    print(f"Edge ({edge[0]}, {edge[1]}) with weight {edge[2]}")
